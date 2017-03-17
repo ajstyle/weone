@@ -1,0 +1,229 @@
+// Account Transaction Bucket Collection
+// every user have one or more Account Transaction Bucket which will contain all the amount credited to a user
+{
+	user_id : String , --Id of user to whoc this bucket belongs
+	credit_transactions : [
+		{ date : DateTime,
+		  amount: Number,
+		  currency_type: "RUPEE"
+		}
+	],
+	credit_transactions_count ; NUmber , -- It will be the number of transactions that is stored in the array
+	
+}
+
+// User Collection 
+{
+	first_name: String,
+	last_name: String,
+	email: String,
+	username: String,
+	--email will be converted into ascii as username,
+	username will be use
+	for internal purposes
+	gender: Enum,	-- can be ["Both male and female", "Male", "Female"]
+	role : String , -- can be  ["Admin","User", "Delegated_Admin", "CLIENT"]
+	age: Number,
+	date_of_birth: DateTime,
+	phonenumber: Number,
+	user_account: {
+		wallet: {
+			type: String,
+			wallet_id: String,
+			wallet_amount_available: Number,
+			amount_to_credit:Number,
+			currency_type : "RUPEE"
+		},
+		account_transaction_bucket : ["String"] , -- Array of bucket id String
+		account_transaction_current_bucket: String , -- id of account_transaction_bucket
+	},
+	address : {
+		city : String,
+		state : String,
+		country: String  -- default INDIA
+	}
+	user_location : {lat: String, lon : String} ,  -- stored the current latitude and longitude of the user
+	user_earning_till_date : Number ,
+	user_earning_bucket : [ String ] , -- Array of user earning bucket collection 
+	current_user_earning_bucket : String , -- Id of current user earning bucket
+	earning_of_yesterday: Number ,
+	friends : [String] -- Array of user id,
+	createdAt : DateTime,
+	updatedAt : DateTime,
+	deletedAt : DateTime ,
+	isActive : Boolean,
+	isAccountLocked : Boolean,
+	neo4J_node_id : String ,  -- Id of node that represent the user in MLM tree
+}
+	
+// User earning bucket collection
+	{
+		user_id : String ,
+		total_number_of_earning:Number,
+        earning_details:[
+        amount:Number
+        ],
+        date_of_earning:Date,
+        paystatus:Bolean //by default false
+        total_amount_of_all_transaction_perday:Number
+	}
+	
+// Master Reward Collection	
+	{
+		_Id: String,
+		name : String ,
+		text_to_display : Text,
+		type : String ,  ["COUPON" , "CASH" ]
+		coupon:{
+        coupon_code:String,
+        start_date:Date,
+        end_date:Date
+        }
+		cash_amount : Number,
+		createdAt : DateTime,
+		updatedAt : DateTime,
+		deletedAt : DateTime ,
+        user_details:{
+        user_id:ObjectID,
+        age:Number,
+        gender:String
+        }
+        }
+	}
+	
+
+
+// Advert Collection
+
+{
+	_id: String,
+	name_of_advert : String,
+	age_group : {
+		min_age : number,
+		max_age : number
+	},
+	gender : String , ["Male","Female","Both Male and Female"],
+	availablity_locality : {
+		center_of_locality : {lat: String , long : String},
+		radius : Number
+	},
+	schedule : {
+		start_date : DateTime,
+		end_date : DateTime
+	},
+	type: String ,  -- VIDEO or IMAGE ,
+	thumbnail : String ,  -- path of thumbnail , name of thumnail
+	number_of_times_viewed : Number,
+	number_of_times_complete_viewed : Number,
+	number_of_times_link_clicked: Number,
+	duration_of_view : NUMBER,
+	status : String , ["Converting" , "Pending" , "Ready" , "Scheduled", "Closed"]
+	smil_file_name: String,  -- file use for Adaptive bitrate exports
+	advert_flavor_available : [ {
+		name: String,
+		scale : {
+			width : Number,
+			height : Number
+		},
+		video_bitrate: Number,
+		audio_bitrate: Number
+	}],
+	cost_per_view : Number ,
+	cost_per_click : Number,
+	number_of_likes: Number,
+	total_star_count: Number,
+	total_user_given_star : Number,
+	client_details : {
+		_id:String,
+	   name:String
+	},
+	total_earning_from_ads : NUMBER,
+	total_money_flow_by_advert : NUMBER , -- current cost_per_view or cost_per_click keep on adding to it as per click or view action
+	createdAt : DateTime,
+	updatedAt : DateTime,
+	deletedAt : DateTime 
+	
+}
+	
+// Ad view history collection
+	
+	{
+		ad_id : String,
+		user_viewd : {
+			_id:String,
+			location: { lat : String , lon : String},
+			address : {
+				city: String,
+				state: String,
+				country: String
+			},
+			age : Number ,
+			gender: String
+		},
+		createdAt : DateTime,
+		client_charged_for_view : NUMBER, 
+		client_charged_for_count : NUMBER,
+		client_details : {
+			_Id : String ,
+			name : String
+		}
+	    
+		
+	}
+	
+ // Ad starred history
+  {
+		ad_id : String,
+		user : {
+			_id:String,
+			location: { lat : String , lon : String},
+			address : {
+				city: String,
+				state: String,
+				country: String
+			},
+			age : Number ,
+			gender: String
+		},
+		starred_count : NUMBER ,
+		createdAt: DateTime,
+		updatedAt: DateTime 
+}
+// Chat Channel Collection
+		{
+		 	channel_id : String,
+			subscribed_user_id : ["String","String"]
+		}
+		
+// Chat history collection
+		{ 
+			type: String ,  -- ["Group" , "ONE_TO_ONE" ]
+			user_details : [ String] , -- Id of users 
+			chat_bucket : [String],
+			current_chat_bucket : String ,
+			topic_id : STRING 
+		}
+	
+// chat bucket colection
+// chat older than last five day will be emptied and added to new bucket from current_chat_bucket
+{
+	_id : String,
+	bucket_type : String,  ---["ARCHIVED", "ACTIVE"]
+	messages: [{
+		user_id: String,
+		message: text,
+		type: String ,  -- [ "IMAGE" , "VIDEO" , TEXT ]
+	}]
+}
+		
+		
+// MLM  --  NEO4J
+		{ 
+			node_id : Noe4J Node Id ,
+			child_of : {user_node},
+			parent_of : {user_node},
+			_Id : String ,
+                        child_node2:Number,
+                        child_node1:Number
+			user_details : { mongodb _ user _object }
+		}
